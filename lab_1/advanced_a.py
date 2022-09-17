@@ -11,9 +11,9 @@ def UNGoals(student_id):
         tuple: Two generated integers.
     """
     random.seed(a=student_id)
-    num1 = random.randrange(1, 18)
+    num1 = random.randint(1, 17)
     while True:
-        num2 = random.randrange(1, 18)
+        num2 = random.randint(1, 17)
         if num1 != num2:
             break
     return num1, num2
