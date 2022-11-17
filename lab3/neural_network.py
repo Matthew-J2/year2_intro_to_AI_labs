@@ -1,4 +1,4 @@
-class Neural_Network:
+class NeuralNetwork:
     def __init__(self, test):
         if test:
             pass
@@ -21,10 +21,11 @@ class Neural_Network:
             hidden_units[i].append(layer_nodes)
         output_units = int(input("How many outputs for the neural network?\n"))
         epochs_num = int(input("How many epochs?\n"))
-        activation_function = input("Which activation function would you like to use? Choose either sigmoid, step, sign, or hyperbolic_tan.\n")
+        activation_function = input("Which activation function would you like to use? Choose either sigmoid, step, "
+                                    "sign, or hyperbolic_tan.\n")
         learning_rate = int(input("What would you like the neural network's learning rate to be?"))
 
-        return (number_inputs, hidden_units, output_units, epochs_num, activation_function, learning_rate)
+        return number_inputs, hidden_units, output_units, epochs_num, activation_function, learning_rate
 
     def input(self):
 
@@ -48,8 +49,10 @@ class Neural_Network:
     def print(self):
         pass
 
+
 def main():
-    neural_network = Neural_Network(0)
+    neural_network = NeuralNetwork(0)
+
 
 if __name__ == "__main__":
     main()
