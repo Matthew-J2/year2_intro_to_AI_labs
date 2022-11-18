@@ -38,12 +38,12 @@ class NeuralNetwork:
         if file_read == "Y":
             pass
         elif file_read == "N":
-            num_sets = input("How many sets of inputs would you like?\n")
+            num_sets = int(input("How many sets of inputs would you like?\n"))
 
             for i in range(num_sets):
                 target_output = input("What would you like the target output to be?\n")
                 inputs_dict = dict()
-                num_inputs = input("How many inputs would you like?\n")
+                num_inputs = int(input("How many inputs would you like?\n"))
 
                 for i in range(num_inputs):
                     node_input = input(f"What would you like input {i+1} to be?\n")
