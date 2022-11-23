@@ -1,5 +1,6 @@
 import json
 import random
+import math
 
 class Node:
     def __init__(self, weights=None):
@@ -26,6 +27,7 @@ class NeuralNetwork:
             self.epochs_num = parameter_tuple[2]
             self.activation_function = parameter_tuple[3]
             self.learning_rate = parameter_tuple[4]
+            self.threshold = parameter_tuple[5]
             self.training_data = self.input()
             self.layers = list()
             for i in parameter_tuple:
@@ -45,6 +47,7 @@ class NeuralNetwork:
 
 
     def parameters(self):
+        threshold = 0
         number_inputs = int(input("How many inputs for the neural network?\n"))
         number_layers = int(input("How many layers would you like the neural network to have?\n"))
         hidden_units = dict()
@@ -55,9 +58,11 @@ class NeuralNetwork:
         epochs_num = int(input("How many epochs?\n"))
         activation_function = input("Which activation function would you like to use? Choose either sigmoid, step, "
                                     "sign, or hyperbolic_tan.\n")
+        if activation_function == "step":
+            threshold = input("Choose a threshold.")
         learning_rate = float(input("What would you like the neural network's learning rate to be?\n"))
 
-        return number_inputs, hidden_units, epochs_num, activation_function, learning_rate
+        return number_inputs, hidden_units, epochs_num, activation_function, learning_rate, threshold
 
     def input(self):
         file_read = input("Would you like to import the training data from a JSON file? Answer with either Y or N.\n")
@@ -109,30 +114,37 @@ class NeuralNetwork:
             for idx, value in enumerate(self.layers):
                 if idx < len(self.layers):
                     self.output(value, self.layers[idx+1])
-
+            # only does epochs and one training set, change this and make it so deletes input layer data each set
 
 
     def output(self, current_layer, next_layer=None):
         if next_layer is None:
             next_layer = []
-        # weighted_sums = []
-        # for i in range(len(current_layer.nodes)):
-        #     current_layer.nodes.weights[0] =
-        #
-        # for idx, value in enumerate(current_layer.nodes):
-        #     x = value[idx] * current_layer.inputs
-        #     for j in i.weights:
-        #         weighted_sums.append(i.weights*)
 
-    def activation_function_calculation(self):
+        for idx, _ in enumerate(current_layer.nodes[0].weights):
+            sum = 0
+            for idx2, node, in enumerate(current_layer.nodes):
+                sum += (node.weights[idx] * current_layer.inputs[idx2])
+            next_layer.inputs.append(self.activation_function_calculation(sum))
+            # remember to clear the inputs for the next epoch and input set
+
+
+
+    def activation_function_calculation(self, sum):
         if self.activation_function == "sigmoid":
-            pass
+            return 1/(1 + math.exp(-sum))
         elif self.activation_function == "step":
-            pass
+            if sum >= self.threshold:
+                return 1
+            else:
+                return 0
         elif self.activation_function == "sign":
-            pass
+            if sum >= 0:
+                return 1
+            else:
+                return -1
         elif self.activation_function == "hyperbolic_tan":
-            pass
+            return(math.exp(sum) - math.exp(-sum)) / (math.exp(sum) + math.exp(-sum))
 
     def weight_update(self):
         pass
