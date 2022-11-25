@@ -49,7 +49,7 @@ class NeuralNetwork:
     def parameters(self):
         threshold = 0
         number_inputs = int(input("How many inputs for the neural network?\n"))
-        number_layers = int(input("How many layers would you like the neural network to have?\n"))
+        number_layers = int(input("How many hidden layers would you like the neural network to have?\n"))
         hidden_units = dict()
         for i in range(number_layers):
             layer_nodes = int(input(f"How many nodes for hidden layer {i+1}?\n"))
@@ -59,7 +59,7 @@ class NeuralNetwork:
         activation_function = input("Which activation function would you like to use? Choose either sigmoid, step, "
                                     "sign, or hyperbolic_tan.\n")
         if activation_function == "step":
-            threshold = input("Choose a threshold.")
+            threshold = float(input("Choose a threshold.\n"))
         learning_rate = float(input("What would you like the neural network's learning rate to be?\n"))
 
         return number_inputs, hidden_units, epochs_num, activation_function, learning_rate, threshold
@@ -187,7 +187,10 @@ class NeuralNetwork:
         print("These are the weights for each node of each layer of the neural network for each node:\n"
               "==================================================\n")
         for idx, value in enumerate(self.layers):
-            print(f"Layer {idx+1}:")
+            if idx == 0:
+                print("Input Layer:")
+            else:
+                print(f"Layer {idx}:")
             for idx2, value2 in enumerate(value.nodes):
                 print(f"Node {idx2+1}:")
                 for idx3, value3 in enumerate(value2.weights):
