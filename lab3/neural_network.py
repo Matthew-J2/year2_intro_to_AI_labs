@@ -31,20 +31,8 @@ class NeuralNetwork:
             self.threshold = parameter_tuple[5]
             self.training_data = self.input()
             self.layers = list()
-            for i in parameter_tuple:
-                print(i)
             self.structure()
-            print(self.layers)
-            for i in self.layers:
-                print(i.nodes)
-                for j in i.nodes:
-                    print(j.weights)
             self.initialise()
-            for i in self.layers:
-                print(i.nodes)
-                for j in i.nodes:
-                    print(j.weights)
-
 
     def parameters(self):
         threshold = 0
@@ -73,12 +61,9 @@ class NeuralNetwork:
                 inputs = json.load(input_file)
                 input_file.close()
                 input_target_sets = inputs["inputs"]
-                print("i am annoying", input_target_sets[0])
 
                 for f in input_target_sets:
                     f[0] = {int(key): int(value) for key, value in f[0].items()}
-                    #for key in f[0].items():
-                        #key = int(key)
 
         elif file_read.upper() == "N":
             num_sets = int(input("How many sets of inputs would you like?\n"))
@@ -92,7 +77,6 @@ class NeuralNetwork:
                     inputs_dict.update({j: node_input})
 
                 input_target_sets.append([inputs_dict, target_output])
-        print(input_target_sets)
         return input_target_sets
 
     def structure(self):
@@ -122,26 +106,21 @@ class NeuralNetwork:
 
                 for idx2, value in enumerate(self.layers):
                     if idx2 < len(self.layers) - 1:
-                        print(value.inputs, "fart\n" , idx2, "\n" , self.layers[idx2+1].inputs)
                         self.output(value, self.layers[idx2+1])
                     else:
                         predicted_output = self.output(value)
-            # only does epochs and one training set, change this and make it so deletes input layer data each set
 
                 for idx3, value in enumerate(self.layers):
                     if idx3 < len(self.layers) - 1:
-
                         self.weight_update(value, self.training_data[idx][1], predicted_output, self.layers[idx3+1])
                     else:
                         self.weight_update(value, self.training_data[idx][1], predicted_output)
-                    for work_please in value.nodes:
-                        print("help", work_please.weights)
+
                 for k in self.layers:
-                    print(k.inputs, "cool")
                     k.inputs = []
+
         self.layers[-1].output = predicted_output
 
-# change this below
     def output(self, current_layer, next_layer=None):
         if next_layer is None:
             weighted_sum = 0
@@ -154,8 +133,6 @@ class NeuralNetwork:
             for idx2, node, in enumerate(current_layer.nodes):
                 weighted_sum += (node.weights[idx] * current_layer.inputs[idx2])
             next_layer.inputs.append(self.activation_function_calculation(weighted_sum))
-            # remember to clear the inputs for the next epoch and input set
-        #self.weight_update(current_layer, next_layer)
 
     def activation_function_calculation(self, weighted_sum):
         if self.activation_function == "sigmoid":
@@ -174,7 +151,7 @@ class NeuralNetwork:
             return(math.exp(weighted_sum) - math.exp(-weighted_sum)) / (math.exp(weighted_sum) + math.exp(-weighted_sum))
 
     def weight_update(self, current_layer, target_output, predicted_output, next_layer=None):
-        if next_layer == None:
+        if next_layer is None:
             for i in current_layer.nodes:
                 i.weights[0] = i.weights[0] + self.learning_rate * (target_output - predicted_output) * predicted_output
             return
@@ -203,6 +180,7 @@ def main():
     neural_network = NeuralNetwork(0)
     neural_network.introduced()
     neural_network.print()
+
 
 if __name__ == "__main__":
     main()
