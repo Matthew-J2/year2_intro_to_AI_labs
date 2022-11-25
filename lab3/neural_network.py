@@ -2,6 +2,7 @@ import json
 import random
 import math
 
+
 class Node:
     def __init__(self, weights=None):
         if weights is None:
@@ -12,7 +13,7 @@ class Node:
 class Layer:
     def __init__(self, node_amount):
         self.inputs = []
-        self.outputs = []
+        self.output = 0
         self.nodes = [Node() for i in range(node_amount)]
 
 
@@ -45,7 +46,6 @@ class NeuralNetwork:
                     print(j.weights)
 
 
-
     def parameters(self):
         threshold = 0
         number_inputs = int(input("How many inputs for the neural network?\n"))
@@ -71,7 +71,14 @@ class NeuralNetwork:
         if file_read.upper() == "Y":
             with open("inputs.json", "r") as input_file:
                 inputs = json.load(input_file)
+                input_file.close()
                 input_target_sets = inputs["inputs"]
+                print("i am annoying", input_target_sets[0])
+
+                for f in input_target_sets:
+                    f[0] = {int(key): int(value) for key, value in f[0].items()}
+                    #for key in f[0].items():
+                        #key = int(key)
 
         elif file_read.upper() == "N":
             num_sets = int(input("How many sets of inputs would you like?\n"))
@@ -105,57 +112,94 @@ class NeuralNetwork:
 
     def introduced(self):
         for i in range(self.epochs_num):
-            sample_order = [x for x in range(self.number_inputs)]
-            random.shuffle(sample_order)
+            random.shuffle(self.training_data)
+            for idx, _ in enumerate(self.training_data):
+                sample_order = [x for x in range(self.number_inputs)]
+                random.shuffle(sample_order)
 
-            for j in sample_order:
-                self.layers[0].inputs.append(self.training_data[i][0][j])
+                for j in sample_order:
+                    self.layers[0].inputs.append(self.training_data[idx][0][j])
 
-            for idx, value in enumerate(self.layers):
-                if idx < len(self.layers):
-                    self.output(value, self.layers[idx+1])
+                for idx2, value in enumerate(self.layers):
+                    if idx2 < len(self.layers) - 1:
+                        print(value.inputs, "fart\n" , idx2, "\n" , self.layers[idx2+1].inputs)
+                        self.output(value, self.layers[idx2+1])
+                    else:
+                        predicted_output = self.output(value)
             # only does epochs and one training set, change this and make it so deletes input layer data each set
 
+                for idx3, value in enumerate(self.layers):
+                    if idx3 < len(self.layers) - 1:
 
+                        self.weight_update(value, self.training_data[idx][1], predicted_output, self.layers[idx3+1])
+                    else:
+                        self.weight_update(value, self.training_data[idx][1], predicted_output)
+                    for work_please in value.nodes:
+                        print("help", work_please.weights)
+                for k in self.layers:
+                    print(k.inputs, "cool")
+                    k.inputs = []
+        self.layers[-1].output = predicted_output
+
+# change this below
     def output(self, current_layer, next_layer=None):
         if next_layer is None:
-            next_layer = []
+            weighted_sum = 0
+            for idx, node in enumerate(current_layer.nodes):
+                weighted_sum += (node.weights[0] * current_layer.inputs[idx])
+            return self.activation_function_calculation(weighted_sum)
 
         for idx, _ in enumerate(current_layer.nodes[0].weights):
-            sum = 0
+            weighted_sum = 0
             for idx2, node, in enumerate(current_layer.nodes):
-                sum += (node.weights[idx] * current_layer.inputs[idx2])
-            next_layer.inputs.append(self.activation_function_calculation(sum))
+                weighted_sum += (node.weights[idx] * current_layer.inputs[idx2])
+            next_layer.inputs.append(self.activation_function_calculation(weighted_sum))
             # remember to clear the inputs for the next epoch and input set
+        #self.weight_update(current_layer, next_layer)
 
-
-
-    def activation_function_calculation(self, sum):
+    def activation_function_calculation(self, weighted_sum):
         if self.activation_function == "sigmoid":
-            return 1/(1 + math.exp(-sum))
+            return 1/(1 + math.exp(-weighted_sum))
         elif self.activation_function == "step":
-            if sum >= self.threshold:
+            if weighted_sum >= self.threshold:
                 return 1
             else:
                 return 0
         elif self.activation_function == "sign":
-            if sum >= 0:
+            if weighted_sum >= 0:
                 return 1
             else:
                 return -1
         elif self.activation_function == "hyperbolic_tan":
-            return(math.exp(sum) - math.exp(-sum)) / (math.exp(sum) + math.exp(-sum))
+            return(math.exp(weighted_sum) - math.exp(-weighted_sum)) / (math.exp(weighted_sum) + math.exp(-weighted_sum))
 
-    def weight_update(self):
-        pass
+    def weight_update(self, current_layer, target_output, predicted_output, next_layer=None):
+        if next_layer == None:
+            for i in current_layer.nodes:
+                i.weights[0] = i.weights[0] + self.learning_rate * (target_output - predicted_output) * predicted_output
+            return
+
+        for i in current_layer.nodes:
+            for idx, value in enumerate(i.weights):
+                i.weights[idx] = value + self.learning_rate * (target_output - predicted_output) * next_layer.inputs[idx]
 
     def print(self):
-        pass
+        print("These are the weights for each node of each layer of the neural network for each node:\n"
+              "==================================================\n")
+        for idx, value in enumerate(self.layers):
+            print(f"Layer {idx+1}:")
+            for idx2, value2 in enumerate(value.nodes):
+                print(f"Node {idx2+1}:")
+                for idx3, value3 in enumerate(value2.weights):
+                    print(f"Weight to node {idx3+1} in next layer: {value3}")
+        print(f"==================================================\nThe overall output value is "
+              f"{self.layers[-1].output}.")
 
 
 def main():
     neural_network = NeuralNetwork(0)
     neural_network.introduced()
+    neural_network.print()
 
 if __name__ == "__main__":
     main()
