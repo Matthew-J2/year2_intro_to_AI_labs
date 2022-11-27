@@ -3,10 +3,32 @@ import random
 
 
 class Chatbot:
+    """
+    A class representing a chatbot.
+    Methods:
+        input_splitter: Splits the user's input into lowercase words.
+        find_time: Finds the current system time and returns a greeting based on it.
+        decide_happiness: Decides the happiness emotion value for the user's input.
+        decide_fitness: Decides how easy the user found their exercise based on their input.
+        questions: Decides on the response to give a user.
+        parse_input: Makes conclusions based on the user's input.
+    Attributes:
+        self.amount_messages: The amount of messages the user has sent
+        self.split_input: The user's input split into words.
+        self.greetings: A tuple of greetings which the chatbot can use.
+        self.compliments: A tuple of compliments the chatbot can give.
+        self.encouragement: A tuple of encouraging things the chatbot can say.
+        self.exercises: A tuple of different activities the user can engage in to exercise.
+        self.username: The user's name.
+        self.happiness: The user's happiness emotion value for their message.
+        self.fitness: How easy the user found their exercise based on their previous message.
+    """
+
     def __init__(self):
+        """Constructor used to create a Chatbot object"""
         self.amount_messages = 0
         self.split_input = []
-        self.greetings = ("Hello", "Hi", f"Good {self.findtime()}")
+        self.greetings = ("Hello", "Hi", f"Good {self.find_time()}")
         self.compliments = ("Great job", "Well done", "Fantastic", "Good work", "Amazing job")
         self.encouragement = ("You can do it", "Keep going", "Nearly there", "Don't give up")
         self.exercises = ("Football", "Basketball", "Tennis", "Rugby", "Gynmastics", "Sprinting", "Cross-country",
@@ -14,12 +36,13 @@ class Chatbot:
         self.username = ""
         self.happiness = 0
         self.fitness = 0
-        self.fitness_level = self.decide_fitness
 
     def input_splitter(self, input_str):
+        """Splits the user's input into lowercase words."""
         self.split_input = input_str.lower().split()
 
-    def findtime(self):
+    def find_time(self):
+        """Finds the current system time and returns a greeting based on it."""
         current_hour = datetime.datetime.now().hour
         if current_hour < 12:
             return "morning"
@@ -29,9 +52,14 @@ class Chatbot:
             return "evening"
 
     def decide_happiness(self):
+        """
+        Decides the happiness emotion value for the user's input, based on the number of words in the input string
+        indicating happiness and unhappiness.
+        """
+
         self.happiness = 0.0
         for i in self.split_input:
-            if i in ("sad", "annoyed", "angry", "frustrated", "glum", "forlorn", "downcase", "cross", "irritated",
+            if i in ("sad", "annoyed", "angry", "frustrated", "glum", "forlorn", "downcast", "cross", "irritated",
                      "bad"):
                 self.happiness -= 1.0
             elif i in ("furious", "hate", "livid", "miserable", "depressed"):
@@ -43,6 +71,11 @@ class Chatbot:
         self.happiness = self.happiness / len(self.split_input)
 
     def decide_fitness(self):
+        """
+        Decides the fitness value for the user's input, based on the number of words in the input string indicating
+        fitness and unfitness.
+        """
+
         self.fitness = 0.0
         for i in self.split_input:
             if i in ("hard", "difficult", "tired", "fatigued", "sleepy", "tiring"):
@@ -56,6 +89,10 @@ class Chatbot:
         self.fitness = self.fitness / len(self.split_input)
 
     def questions(self):
+        """
+        Decides on the response to give to a user, based on if the user has given any input, given their name, and how
+        happy they are and how difficult they are finding their exercise.
+        """
         if self.amount_messages == 0:
             random_greeting = random.randrange(len(self.greetings))
             return (f"{self.greetings[random_greeting]}.", "")
@@ -90,13 +127,17 @@ class Chatbot:
                        f"is too easy, maybe try something different like {self.exercises[random_exercise].lower()}", "")
 
     def parse_input(self, response, question_info):
+        """
+        Makes conclusions about the user's happiness and how easy their exercise is based on the user's input.
+        Records number of messages and changes the user's amount of messages. Checks for any extra information returned
+        with the chatbot's response string.
+        """
         self.input_splitter(response)
         self.amount_messages += 1
         self.decide_happiness()
         self.decide_fitness()
         if question_info == "name_ask":
             self.username = response.title()
-
 
 
 def main():
