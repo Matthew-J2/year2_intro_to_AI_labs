@@ -1,2 +1,2 @@
-# 5000CEM_source_code
-This repository is used to store source code used in my 5000CEM report.
+# Intro to AI portfolio
+A portfolio of tasks completed during my Introduction to AI module, including a feed-forward backpropagating neural network created from scratch in Python.
